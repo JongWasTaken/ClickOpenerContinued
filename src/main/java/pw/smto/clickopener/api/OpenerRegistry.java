@@ -16,16 +16,16 @@ public class OpenerRegistry {
 	 */
 	@SuppressWarnings("unused")
 	public static void onServerLoading(MinecraftServer server) {
-		if (OPENERS.isEmpty()) {
+		if (OpenerRegistry.OPENERS.isEmpty()) {
 			OpenerRegisterEvent.EVENT.invoker().onRegister(OpenerRegistry::register);
 		}
 	}
 
 	private static void register(Item item, Opener<?, ?> opener) {
-		OPENERS.put(item, opener);
+        OpenerRegistry.OPENERS.put(item, opener);
 	}
 
 	public static Opener<?, ?> get(Item item) {
-		return OPENERS.get(item);
+		return OpenerRegistry.OPENERS.get(item);
 	}
 }

@@ -20,20 +20,20 @@ public abstract class ScreenHandlerMixin implements OpenContextHolder {
 
 	@Override
 	public void clickopener$setOpenContext(OpenContext<?, ?> openContext) {
-		clickopener$openContext = openContext;
+        this.clickopener$openContext = openContext;
 	}
 
 	@Override
 	public boolean clickopener$hasOpenContext() {
-		return clickopener$openContext != null;
+		return this.clickopener$openContext != null;
 	}
 
 	@SuppressWarnings("unused")
 	@Inject(at = @At("RETURN"), method = "onClosed")
 	private void clickopener$onClose(PlayerEntity player, CallbackInfo info) {
-		if (clickopener$hasOpenContext()) {
-			clickopener$openContext.openerConsumer(Opener::onClose);
-			clickopener$openContext = null;
+		if (this.clickopener$hasOpenContext()) {
+            this.clickopener$openContext.openerConsumer(Opener::onClose);
+            this.clickopener$openContext = null;
 		}
 	}
 }

@@ -11,51 +11,37 @@ import net.minecraft.util.math.BlockPos;
 public class BlockOpenContext extends OpenContext<BlockOpenContext, BlockScreenOpener> {
 	private final FakeWorld world;
 	private BlockState blockState;
-	private BlockEntity blockEntity;
+	private final BlockEntity blockEntity;
 
 	public BlockOpenContext(ClickContext context, BlockScreenOpener opener) {
 		super(context, opener);
 		this.world = FakeWorld.create(this);
 		this.blockState = opener.getBlockState(this);
 		this.blockEntity = opener.getBlockEntity(this);
-		if (blockEntity != null) blockEntity.setWorld(world());
-	}
-
-	public BlockOpenContext(BlockOpenContext context, BlockScreenOpener opener) {
-		this((ClickContext) context, opener);
-		this.blockState = context.getBlockState();
-		this.blockEntity = context.getBlockEntity();
+		if (this.blockEntity != null) this.blockEntity.setWorld(this.world());
 	}
 
 	@Override
 	public FakeWorld world() {
-		return world;
+		return this.world;
 	}
 
 	public BlockState getBlockState() {
-		return blockState;
+		return this.blockState;
 	}
 
 	public BlockEntity getBlockEntity() {
-		return blockEntity;
+		return this.blockEntity;
 	}
 
 	public void setBlockState(BlockState state) {
 		var oldState = this.blockState;
 		this.blockState = state;
-		opener().onStateChange(oldState, this);
-	}
-
-	public BlockOpenContext setBlockEntity(BlockEntity blockEntity) {
-		this.blockEntity = blockEntity;
-		if (blockEntity != null) {
-			blockEntity.setWorld(world());
-		}
-		return this;
+        this.opener().onStateChange(oldState, this);
 	}
 
 	public boolean handles(BlockPos pos) {
-		return Objects.equals(pos(), pos);
+		return Objects.equals(this.pos(), pos);
 	}
 
 	@Override

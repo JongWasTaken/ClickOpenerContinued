@@ -19,43 +19,39 @@ public abstract class OpenContext<SELF extends OpenContext<SELF, O>, O extends O
 	protected OpenContext(ClickContext context, O opener) {
 		super(context);
 		this.opener = opener;
-		this.cursorStack = initialCursorStack();
-		this.stack = initialStack();
+		this.cursorStack = this.initialCursorStack();
+		this.stack = this.initialStack();
 		this.syncing = true;
 	}
 
 	public abstract SELF self();
 
 	public O opener() {
-		return opener;
+		return this.opener;
 	}
 
 	public ItemStack getStack() {
-		return stack;
+		return this.stack;
 	}
 
 	public ItemStack getCursorStack() {
-		return cursorStack;
-	}
-	
-	public boolean isSyncing() {
-		return syncing;
+		return this.cursorStack;
 	}
 	
 	public void setSyncing(boolean syncing) {
 		this.syncing = syncing;
-		sync();
+        this.sync();
 	}
 	
 	public void sync() {
-		if (!isSyncing()) return;
-		clickedInventory().setStack(slotIndex(), getStack());
+		if (!this.syncing) return;
+        this.clickedInventory().setStack(this.slotIndex(), this.stack);
 	}
 
 	public void setStack(ItemStack stack) {
-		Openable.cast(stack).clickopener$setCloser(Openable.cast(getStack()).clickopener$clearCloser());
+		Openable.cast(stack).clickopener$setCloser(Openable.cast(this.stack).clickopener$clearCloser());
 		this.stack = stack;
-		sync();
+        this.sync();
 	}
 
 	public void setCursorStack(ItemStack cursorStack) {
@@ -64,23 +60,23 @@ public abstract class OpenContext<SELF extends OpenContext<SELF, O>, O extends O
 
 	public <T> T runWithStackInHand(Supplier<ItemStack> stackSupplier, Consumer<ItemStack> stackReplacer, Function<ItemStack, T> action) {
 		var actionStack = stackSupplier.get();
-		var originalHandStack = player().getStackInHand(hand());
+		var originalHandStack = this.player().getStackInHand(this.hand());
 		if (actionStack == originalHandStack) return action.apply(originalHandStack);
 
-		setSyncing(false);
-		player().setStackInHand(hand(), actionStack);
+        this.setSyncing(false);
+        this.player().setStackInHand(this.hand(), actionStack);
 		var result = action.apply(actionStack);
-		stackReplacer.accept(player().getStackInHand(hand()));
-		player().setStackInHand(hand(), originalHandStack);
-		setSyncing(true);
+		stackReplacer.accept(this.player().getStackInHand(this.hand()));
+        this.player().setStackInHand(this.hand(), originalHandStack);
+        this.setSyncing(true);
 		return result;
 	}
 
 	public void openerConsumer(BiConsumer<O, SELF> consumer) {
-		consumer.accept(opener(), self());
+		consumer.accept(this.opener(), this.self());
 	}
 
 	public <R> R openerFunction(BiFunction<O, SELF, R> consumer) {
-		return consumer.apply(opener(), self());
+		return consumer.apply(this.opener(), this.self());
 	}
 }

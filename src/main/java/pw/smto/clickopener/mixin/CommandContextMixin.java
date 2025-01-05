@@ -17,7 +17,7 @@ public abstract class CommandContextMixin implements ArgumentChecker {
 	private Map<String, ParsedArgument<?, ?>> arguments;
 
 	@Override
-	public boolean hasArgument(String name) {
-		return arguments.get(name) != null;
+	public boolean clickOpenerContinued$hasArgument(String name) {
+		return this.arguments.get(name) != null;
 	}
 }

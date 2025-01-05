@@ -26,47 +26,47 @@ public class PlayerConfigs {
 	}
 
 	private PlayerConfig getOrCreate(UUID uuid) {
-		return configs.computeIfAbsent(uuid, id -> PlayerConfig.defaultConfig());
+		return this.configs.computeIfAbsent(uuid, id -> PlayerConfig.defaultConfig());
 	}
 
 	private void store(UUID uuid, PlayerConfig config) {
-		configs.put(uuid, config);
-		write();
+        this.configs.put(uuid, config);
+        this.write();
 	}
 
 	private void modifyPlayerConfig(UUID uuid, UnaryOperator<PlayerConfig> modifyFunc) {
-		store(uuid, modifyFunc.apply(getOrCreate(uuid)));
+        this.store(uuid, modifyFunc.apply(this.getOrCreate(uuid)));
 	}
 
 	public boolean isClickTypeAllowed(ServerPlayerEntity player, ClickType clickType) {
-		return clickType == null || clickType.equals(getClickType(player));
+		return clickType == null || clickType == this.getClickType(player);
 	}
 
 	public void setClickType(ServerPlayerEntity player, ClickType clickType) {
-		modifyPlayerConfig(player.getUuid(), c -> c.withClickType(clickType));
+        this.modifyPlayerConfig(player.getUuid(), c -> c.withClickType(clickType));
 	}
 
 	public ClickType getClickType(ServerPlayerEntity player) {
-		return getOrCreate(player.getUuid()).clickType();
+		return this.getOrCreate(player.getUuid()).clickType();
 	}
 
 	public void reload() {
-		if (Files.exists(CONFIG_FILE)) {
-			if (!read()) {
+		if (Files.exists(PlayerConfigs.CONFIG_FILE)) {
+			if (!this.read()) {
 				//Don't write. Allow the user a chance to recover.
 				return;
 			}
 		} else {
-			configs.clear();
+            this.configs.clear();
 		}
-		write();
+        this.write();
 	}
 
 	public boolean read() {
-		try (var reader = Files.newBufferedReader(CONFIG_FILE)) {
+		try (var reader = Files.newBufferedReader(PlayerConfigs.CONFIG_FILE)) {
 			Map<UUID, PlayerConfig> readIn = ClickOpenerMod.GSON.fromJson(reader, new TypeToken<HashMap<UUID, PlayerConfig>>() {}.getType());
-			configs.clear();
-			configs.putAll(readIn);
+            this.configs.clear();
+            this.configs.putAll(readIn);
 			return true;
 		} catch (IOException | JsonParseException e) {
 			ClickOpenerMod.LOGGER.error("Failed to read configuration file: {}", e.getMessage());
@@ -75,14 +75,14 @@ public class PlayerConfigs {
 	}
 
 	public void write() {
-		try (var out = Files.newBufferedWriter(CONFIG_FILE)) {
-			ClickOpenerMod.GSON.toJson(configs, out);
+		try (var out = Files.newBufferedWriter(PlayerConfigs.CONFIG_FILE)) {
+			ClickOpenerMod.GSON.toJson(this.configs, out);
 		} catch (IOException | JsonIOException e) {
 			ClickOpenerMod.LOGGER.error("Failed to write configuration file: {}", e.getMessage());
 		}
 	}
 
-	private static record PlayerConfig(ClickType clickType) {
+	private record PlayerConfig(ClickType clickType) {
 		public static PlayerConfig defaultConfig() {
 			return new PlayerConfig(ClickOpenerMod.CONFIG.getClickType());
 		}

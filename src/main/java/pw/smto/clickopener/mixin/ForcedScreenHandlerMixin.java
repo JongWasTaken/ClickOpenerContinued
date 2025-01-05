@@ -25,17 +25,17 @@ public abstract class ForcedScreenHandlerMixin extends ScreenHandler implements 
 
 	@Override
 	public void clickopener$allowUse() {
-		clickopener$isAllowed = true;
+        this.clickopener$isAllowed = true;
 	}
 
 	@Override
 	public boolean clickopener$isUseAllowed() {
-		return clickopener$isAllowed;
+		return this.clickopener$isAllowed;
 	}
 
 	@SuppressWarnings("unused")
 	@Inject(method = "canUse(Lnet/minecraft/entity/player/PlayerEntity;)Z", at = @At("HEAD"), cancellable = true)
 	public void clickOpener$onCanUse(PlayerEntity player, CallbackInfoReturnable<Boolean> info) {
-		if (clickopener$isUseAllowed()) info.setReturnValue(true);
+		if (this.clickopener$isUseAllowed()) info.setReturnValue(true);
 	}
 }

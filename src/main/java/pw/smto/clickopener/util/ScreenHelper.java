@@ -55,7 +55,7 @@ public class ScreenHelper {
 		}
 
 		try {
-			return openScreenFromContext(opener.mutateContext(context));
+			return ScreenHelper.openScreenFromContext(opener.mutateContext(context));
 		} catch (ItemOpenException e) {
 			ClickOpenerMod.LOGGER.warn("Error opening item:", e);
 		}

@@ -11,8 +11,8 @@ public interface Openable {
 	void clickopener$setCloser(Runnable closer);
 	boolean clickopener$hasCloser();
 	default Runnable clickopener$clearCloser() {
-		var closer = clickopener$getCloser();
-		clickopener$setCloser(null);
+		var closer = this.clickopener$getCloser();
+        this.clickopener$setCloser(null);
 		return closer;
 	}
 }

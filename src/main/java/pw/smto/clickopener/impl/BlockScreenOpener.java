@@ -10,6 +10,8 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 
+import java.util.Objects;
+
 public interface BlockScreenOpener extends Opener<BlockScreenOpener, BlockOpenContext> {
 	BlockScreenOpener DEFAULT_OPENER = new BlockScreenOpener() {
 	};
@@ -48,7 +50,7 @@ public interface BlockScreenOpener extends Opener<BlockScreenOpener, BlockOpenCo
 	}
 
 	default void onMarkDirty(BlockOpenContext context) {
-		context.setStack(getReplacingStack(context));
+		context.setStack(this.getReplacingStack(context));
 	}
 
 	default void onStateChange(BlockState oldState, BlockOpenContext context) {
@@ -62,14 +64,14 @@ public interface BlockScreenOpener extends Opener<BlockScreenOpener, BlockOpenCo
 		}
 
 		//Assumes other state changes don't close the screen
-		context.setStack(getReplacingStack(context));
+		context.setStack(this.getReplacingStack(context));
 	}
 
 	default BlockState getBlockState(BlockOpenContext context) {
 		var block = Block.getBlockFromItem(context.getStack().getItem());
 
 		if (context.getStack().getComponents().contains(DataComponentTypes.BLOCK_STATE)) {
-			return context.getStack().get(DataComponentTypes.BLOCK_STATE).applyToState(block.getDefaultState());
+			return Objects.requireNonNull(context.getStack().get(DataComponentTypes.BLOCK_STATE)).applyToState(block.getDefaultState());
 		}
 
 		return block.getDefaultState();

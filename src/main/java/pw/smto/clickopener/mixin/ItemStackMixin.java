@@ -22,9 +22,9 @@ public abstract class ItemStackMixin implements Openable {
 	@SuppressWarnings("unused")
 	@Inject(at = @At("RETURN"), method = "setCount")
 	private void clickopener$onSetCount(int count, CallbackInfo info) {
-		if (isEmpty() && clickopener$hasCloser()) {
-			var tmp = clickopener$closer;
-			clickopener$clearCloser();
+		if (this.isEmpty() && this.clickopener$hasCloser()) {
+			var tmp = this.clickopener$closer;
+            this.clickopener$clearCloser();
 			tmp.run();
 		}
 	}
@@ -36,11 +36,11 @@ public abstract class ItemStackMixin implements Openable {
 
 	@Override
 	public Runnable clickopener$getCloser() {
-		return clickopener$closer;
+		return this.clickopener$closer;
 	}
 
 	@Override
 	public boolean clickopener$hasCloser() {
-		return clickopener$closer != null;
+		return this.clickopener$closer != null;
 	}
 }

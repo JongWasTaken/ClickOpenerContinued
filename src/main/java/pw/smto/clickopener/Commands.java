@@ -6,12 +6,14 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
+import net.minecraft.server.command.CommandManager;
 import pw.smto.clickopener.api.ClickType;
 import pw.smto.clickopener.interfaces.ArgumentChecker;
 
 import static net.minecraft.server.command.CommandManager.literal;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static net.minecraft.server.command.CommandManager.argument;
@@ -24,7 +26,6 @@ import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.CommandSource;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.tag.TagKey;
-import net.minecraft.server.command.CommandManager.RegistrationEnvironment;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -46,7 +47,7 @@ public class Commands {
 	private Commands() {}
 
 	@SuppressWarnings({"java:S1172", "unused"})
-	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, RegistrationEnvironment environment) {
+	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
 		var serverRoot = literal(ClickOpenerMod.MODID)
 				.requires(s->s.hasPermissionLevel(4));
 
@@ -54,68 +55,68 @@ public class Commands {
 				.executes(Commands::reload);
 		dispatcher.register(literal("fly")
 				.executes((CommandContext<ServerCommandSource> context) -> {
-					context.getSource().getPlayer().getAbilities().allowFlying = true;
+					Objects.requireNonNull(context.getSource().getPlayer()).getAbilities().allowFlying = true;
 					context.getSource().getPlayer().sendAbilitiesUpdate();
 					return 0;
 				}));
 
 		var add = literal("add")
 				.then(literal("item")
-						.then(argument(ID, identifier())
-								.suggests(ITEM_SUGGESTIONS)
-								.executes(c -> addItem(c, true)))
-						.executes(c -> addItem(c, true)))
+						.then(argument(Commands.ID, identifier())
+								.suggests(Commands.ITEM_SUGGESTIONS)
+								.executes(c -> Commands.addItem(c, true)))
+						.executes(c -> Commands.addItem(c, true)))
 				.then(literal("blocktag")
-						.then(argument(ID, identifier())
-								.suggests(BLOCK_TAG_SUGGESTIONS)
+						.then(argument(Commands.ID, identifier())
+								.suggests(Commands.BLOCK_TAG_SUGGESTIONS)
 								.executes(Commands::addBlockTagToWhitelist)))
 				.then(literal("itemtag")
-						.then(argument(ID, identifier())
-								.suggests(ITEM_TAG_SUGGESTIONS)
+						.then(argument(Commands.ID, identifier())
+								.suggests(Commands.ITEM_TAG_SUGGESTIONS)
 								.executes(Commands::addItemTagToWhitelist)));
 
 		var remove = literal("remove")
 				.then(literal("item")
-						.then(argument(ID, identifier())
-								.suggests(WHITELIST_ITEM_SUGGESTIONS)
-								.executes(c -> removeItem(c, true)))
-						.executes(c -> removeItem(c, true)))
+						.then(argument(Commands.ID, identifier())
+								.suggests(Commands.WHITELIST_ITEM_SUGGESTIONS)
+								.executes(c -> Commands.removeItem(c, true)))
+						.executes(c -> Commands.removeItem(c, true)))
 				.then(literal("blocktag")
-						.then(argument(ID, identifier())
-								.suggests(WHITELIST_BLOCKTAG_SUGGESTIONS)
+						.then(argument(Commands.ID, identifier())
+								.suggests(Commands.WHITELIST_BLOCKTAG_SUGGESTIONS)
 								.executes(Commands::removeBlockTagFromWhitelist)))
 				.then(literal("itemtag")
-						.then(argument(ID, identifier())
-								.suggests(WHITELIST_ITEMTAG_SUGGESTIONS)
+						.then(argument(Commands.ID, identifier())
+								.suggests(Commands.WHITELIST_ITEMTAG_SUGGESTIONS)
 								.executes(Commands::removeItemTagFromWhitelist)));
 
 		var whitelist = literal("whitelist")
 				.then(add)
 				.then(remove)
-				.executes(c -> displayList(c, true));
+				.executes(c -> Commands.displayList(c, true));
 
 		add = literal("add")
-				.then(argument(ID, identifier())
-						.suggests(ITEM_SUGGESTIONS)
-						.executes(c -> addItem(c, false)))
-				.executes(c -> addItem(c, false));
+				.then(argument(Commands.ID, identifier())
+						.suggests(Commands.ITEM_SUGGESTIONS)
+						.executes(c -> Commands.addItem(c, false)))
+				.executes(c -> Commands.addItem(c, false));
 
 		remove = literal("remove")
-				.then(argument(ID, identifier())
-						.suggests(BLACKLIST_SUGGESTIONS)
-						.executes(c -> removeItem(c, false)))
-				.executes(c -> removeItem(c, false));
+				.then(argument(Commands.ID, identifier())
+						.suggests(Commands.BLACKLIST_SUGGESTIONS)
+						.executes(c -> Commands.removeItem(c, false)))
+				.executes(c -> Commands.removeItem(c, false));
 
 		var blacklist = literal("blacklist")
 				.then(add)
 				.then(remove)
-				.executes(c -> displayList(c, false));
+				.executes(c -> Commands.displayList(c, false));
 
-		var defaultClickType = literal(DEFAULT_CLICK_TYPE)
-				.then(argument(DEFAULT_CLICK_TYPE, word())
-						.suggests(CLICK_TYPE_SUGGESTIONS)
-						.executes(c -> setClickType(c, false)))
-				.executes(c -> displayClickType(c, false));
+		var defaultClickType = literal(Commands.DEFAULT_CLICK_TYPE)
+				.then(argument(Commands.DEFAULT_CLICK_TYPE, word())
+						.suggests(Commands.CLICK_TYPE_SUGGESTIONS)
+						.executes(c -> Commands.setClickType(c, false)))
+				.executes(c -> Commands.displayClickType(c, false));
 
 		serverRoot
 		.then(reload)
@@ -123,11 +124,11 @@ public class Commands {
 		.then(blacklist)
 		.then(defaultClickType);
 
-		var clickType = literal(CLICK_TYPE)
-				.then(argument(CLICK_TYPE, word())
-						.suggests(CLICK_TYPE_SUGGESTIONS)
-						.executes(c -> setClickType(c, true)))
-				.executes(c -> displayClickType(c, true));
+		var clickType = literal(Commands.CLICK_TYPE)
+				.then(argument(Commands.CLICK_TYPE, word())
+						.suggests(Commands.CLICK_TYPE_SUGGESTIONS)
+						.executes(c -> Commands.setClickType(c, true)))
+				.executes(c -> Commands.displayClickType(c, true));
 
 		var playerRoot = literal(ClickOpenerMod.MODID+"_player")
 				.then(clickType);
@@ -137,7 +138,7 @@ public class Commands {
 	}
 
 	private static int setClickType(CommandContext<ServerCommandSource> context, boolean player) throws CommandSyntaxException {
-		var type = ClickType.tryValueOf(getString(context, player ? CLICK_TYPE : DEFAULT_CLICK_TYPE));
+		var type = ClickType.tryValueOf(getString(context, player ? Commands.CLICK_TYPE : Commands.DEFAULT_CLICK_TYPE));
 		if (player) {
 			ClickOpenerMod.PLAYER_CONFIGS.setClickType(context.getSource().getPlayerOrThrow(), type);
 			context.getSource().sendFeedback(() -> Text.of("ClickType set to "+type), false);
@@ -156,10 +157,10 @@ public class Commands {
 	}
 
 	private static int addItem(CommandContext<ServerCommandSource> context, boolean isWhitelist) throws CommandSyntaxException {
-		var item = ArgumentChecker.hasArgument(context, ID) ? getIdentifier(context, ID) : Registries.ITEM.getId(context.getSource().getPlayerOrThrow().getMainHandStack().getItem());
+		var item = ArgumentChecker.hasArgument(context, Commands.ID) ? getIdentifier(context, Commands.ID) : Registries.ITEM.getId(context.getSource().getPlayerOrThrow().getMainHandStack().getItem());
 		if (item.equals(Registries.ITEM.getDefaultId())) {
 			context.getSource().sendError(Text.of("Invalid Item"));
-			return COMMAND_ERROR;
+			return Commands.COMMAND_ERROR;
 		}
 
 		ClickOpenerMod.CONFIG.addItem(item, isWhitelist);
@@ -168,35 +169,35 @@ public class Commands {
 	}
 
 	private static int addBlockTagToWhitelist(CommandContext<ServerCommandSource> context) {
-		var tag = getIdentifier(context, ID);
+		var tag = getIdentifier(context, Commands.ID);
 		ClickOpenerMod.CONFIG.addBlockTag(tag);
 		context.getSource().sendFeedback(() -> Text.of("#"+tag+" added to whitelist."), false);
 		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int addItemTagToWhitelist(CommandContext<ServerCommandSource> context) {
-		var tag = getIdentifier(context, ID);
+		var tag = getIdentifier(context, Commands.ID);
 		ClickOpenerMod.CONFIG.addItemTag(tag);
 		context.getSource().sendFeedback(() -> Text.of("#"+tag+" added to whitelist."), false);
 		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int removeItem(CommandContext<ServerCommandSource> context, boolean isWhitelist) throws CommandSyntaxException {
-		var item = ArgumentChecker.hasArgument(context, ID) ? getIdentifier(context, ID) : Registries.ITEM.getId(context.getSource().getPlayerOrThrow().getMainHandStack().getItem());
+		var item = ArgumentChecker.hasArgument(context, Commands.ID) ? getIdentifier(context, Commands.ID) : Registries.ITEM.getId(context.getSource().getPlayerOrThrow().getMainHandStack().getItem());
 		ClickOpenerMod.CONFIG.removeItem(item, isWhitelist);
 		context.getSource().sendFeedback(() -> Text.of(item+" removed from "+(isWhitelist ? "whitelist." : "blacklist.")), false);
 		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int removeBlockTagFromWhitelist(CommandContext<ServerCommandSource> context) {
-		var tag = getIdentifier(context, ID);
+		var tag = getIdentifier(context, Commands.ID);
 		ClickOpenerMod.CONFIG.removeBlockTag(tag);
 		context.getSource().sendFeedback(() -> Text.of("#"+tag+" removed from whitelist."), false);
 		return Command.SINGLE_SUCCESS;
 	}
 
 	private static int removeItemTagFromWhitelist(CommandContext<ServerCommandSource> context) {
-		var tag = getIdentifier(context, ID);
+		var tag = getIdentifier(context, Commands.ID);
 		ClickOpenerMod.CONFIG.removeItemTag(tag);
 		context.getSource().sendFeedback(() -> Text.of("#"+tag+" removed from whitelist."), false);
 		return Command.SINGLE_SUCCESS;

@@ -2,16 +2,8 @@ package pw.smto.clickopener;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.util.Identifier;
-import net.minecraft.world.WorldEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +18,7 @@ import pw.smto.clickopener.util.IdentifierAdapter;
 //Create feedback translations
 public class ClickOpenerMod implements ModInitializer {
 	public static final String MODID = "clickopener";
-	public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
+	public static final Logger LOGGER = LoggerFactory.getLogger(ClickOpenerMod.MODID);
 	public static final Gson GSON = new GsonBuilder()
 			.registerTypeAdapter(Identifier.class, new IdentifierAdapter())
 			.setPrettyPrinting()
@@ -37,8 +29,8 @@ public class ClickOpenerMod implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		CONFIG.reload();
-		PLAYER_CONFIGS.reload();
+        ClickOpenerMod.CONFIG.reload();
+        ClickOpenerMod.PLAYER_CONFIGS.reload();
 
 		CommandRegistrationCallback.EVENT.register(Commands::register);
 		ServerLifecycleEvents.SERVER_STARTING.register(OpenerRegistry::onServerLoading);

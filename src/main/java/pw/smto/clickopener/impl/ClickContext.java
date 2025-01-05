@@ -41,46 +41,46 @@ public class ClickContext {
 	}
 
 	public ServerPlayerEntity player() {
-		return player;
+		return this.player;
 	}
 
 	public ServerWorld world() {
-		return player().getServerWorld();
+		return this.player().getServerWorld();
 	}
 
 	public BlockPos pos() {
-		return player().getBlockPos();
+		return this.player().getBlockPos();
 	}
 
 	public Hand hand() {
-		return hand;
+		return this.hand;
 	}
 
 	public Inventory clickedInventory() {
-		return clickedInventory;
+		return this.clickedInventory;
 	}
 
 	public int slotIndex() {
-		return slotIndex;
+		return this.slotIndex;
 	}
 
 	public ClickType clickType() {
-		return clickType;
+		return this.clickType;
 	}
 
 	public ItemStack initialCursorStack() {
-		return initialCursorStack;
+		return this.initialCursorStack;
 	}
 
 	public ItemStack initialStack() {
-		return initialStack;
+		return this.initialStack;
 	}
 
 	public BlockHitResult hitResult() {
-		return new BlockHitResult(pos().toCenterPos(), Direction.NORTH, pos(), true);
+		return new BlockHitResult(this.pos().toCenterPos(), Direction.NORTH, this.pos(), true);
 	}
 
 	public ItemUsageContext toItemUsageContext() {
-		return new ItemUsageContext(world(), player(), hand(), player().getStackInHand(hand()), hitResult());
+		return new ItemUsageContext(this.world(), this.player(), this.hand(), this.player().getStackInHand(this.hand()), this.hitResult());
 	}
 }

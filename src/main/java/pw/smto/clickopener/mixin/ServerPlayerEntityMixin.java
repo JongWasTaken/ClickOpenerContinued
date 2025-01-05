@@ -27,13 +27,13 @@ public abstract class ServerPlayerEntityMixin extends PlayerEntity implements Cl
 
 	@Override
 	public void clickopener$setSkipClosePacket(boolean skipClosePacket) {
-		clickopener$skipClosePacket = skipClosePacket;
+        this.clickopener$skipClosePacket = skipClosePacket;
 	}
 
 	@Inject(method = "closeHandledScreen", at = @At("HEAD"), cancellable = true)
 	private void clickopener$skipClosePacket(CallbackInfo info) {
-		if (clickopener$skipClosePacket) {
-			onHandledScreenClosed();
+		if (this.clickopener$skipClosePacket) {
+            this.onHandledScreenClosed();
 			info.cancel();
 		}
 	}

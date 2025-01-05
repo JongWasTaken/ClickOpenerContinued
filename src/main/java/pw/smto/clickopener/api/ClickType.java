@@ -12,28 +12,28 @@ public enum ClickType implements StringIdentifiable {
 	LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT, DROP, CTRL_DROP,
 	NONE;
 
-	private static final Map<String, ClickType> VALUES = Arrays.stream(values()).collect(Collectors.toUnmodifiableMap(Enum::name, Function.identity()));
+	private static final Map<String, ClickType> VALUES = Arrays.stream(ClickType.values()).collect(Collectors.toUnmodifiableMap(Enum::name, Function.identity()));
 
 	public static ClickType convert(SlotActionType action, int button, int slot) {
 		return switch (action) {
-			case PICKUP -> button == 0 ? LEFT : RIGHT;
-			case QUICK_MOVE -> button == 0 ? SHIFT_LEFT : SHIFT_RIGHT;
-			case THROW ->  evalThrow(slot, button);
-			default -> NONE;
+			case PICKUP -> button == 0 ? ClickType.LEFT : ClickType.RIGHT;
+			case QUICK_MOVE -> button == 0 ? ClickType.SHIFT_LEFT : ClickType.SHIFT_RIGHT;
+			case THROW -> ClickType.evalThrow(slot, button);
+			default -> ClickType.NONE;
 		};
 	}
 
 	private static ClickType evalThrow(int slot, int button) {
-		if (slot == -99) return NONE;
-		return button == 0 ? DROP : CTRL_DROP;
+		if (slot == -99) return ClickType.NONE;
+		return button == 0 ? ClickType.DROP : ClickType.CTRL_DROP;
 	}
 
 	public static ClickType tryValueOf(String s) {
-		return VALUES.getOrDefault(s, NONE);
+		return ClickType.VALUES.getOrDefault(s, ClickType.NONE);
 	}
 
 	@Override
 	public String asString() {
-		return name();
+		return this.name();
 	}
 }

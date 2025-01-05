@@ -1,6 +1,6 @@
 package pw.smto.clickopener.util;
 
-@SuppressWarnings("serial")
+@SuppressWarnings({"serial", "unused"})
 public class ItemOpenException extends RuntimeException {
 	public ItemOpenException() {}
 	public ItemOpenException(String message) {

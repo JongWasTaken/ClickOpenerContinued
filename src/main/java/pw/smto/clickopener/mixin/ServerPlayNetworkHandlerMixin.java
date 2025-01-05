@@ -3,7 +3,6 @@ package pw.smto.clickopener.mixin;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -20,9 +19,9 @@ import net.minecraft.util.Hand;
 @Mixin(ServerPlayNetworkHandler.class)
 public abstract class ServerPlayNetworkHandlerMixin {
 	@Shadow
-	private ServerPlayerEntity player;
+    public ServerPlayerEntity player;
 
-	@Inject(at = @At(value = "INVOKE", target = "net/minecraft/network/packet/c2s/play/ClickSlotC2SPacket.getRevision()I", shift = Shift.BEFORE), method = "onClickSlot", cancellable = true)
+	@Inject(at = @At(value = "INVOKE", target = "net/minecraft/network/packet/c2s/play/ClickSlotC2SPacket.getRevision()I", shift = At.Shift.BEFORE), method = "onClickSlot", cancellable = true)
 	public void clickopener_onClickSlot(ClickSlotC2SPacket packet, CallbackInfo info) {
 		var slotIndex = packet.getSlot();
 		if (slotIndex==ScreenHandler.EMPTY_SPACE_SLOT_INDEX || slotIndex==-1) {
@@ -30,23 +29,23 @@ public abstract class ServerPlayNetworkHandlerMixin {
 			return;
 		}
 
-		var slot = player.currentScreenHandler.getSlot(slotIndex);
+		var slot = this.player.currentScreenHandler.getSlot(slotIndex);
 		var stack = slot.getStack();
 		if (stack!=null && ((Openable)(Object)stack).clickopener$hasCloser()) {
 			//Do nothing/revert picking up the item
-			player.currentScreenHandler.syncState();
+            this.player.currentScreenHandler.syncState();
 			info.cancel();
 			return;
 		}
 
 		var clickType = ClickType.convert(packet.getActionType(), packet.getButton(), slotIndex);
-		if (ClickType.NONE.equals(clickType)) {
+		if (ClickType.NONE == clickType) {
 			//use Minecraft default handling
 			return;
 		}
 
 		for (var hand : Hand.values()) {
-			if (ScreenHelper.openScreen(new ClickContext(player, hand, slot.inventory, slot.getIndex(), clickType, player.currentScreenHandler.getCursorStack(), stack))) {
+			if (ScreenHelper.openScreen(new ClickContext(this.player, hand, slot.inventory, slot.getIndex(), clickType, this.player.currentScreenHandler.getCursorStack(), stack))) {
 				//Successfully opened, so don't do anything else
 				info.cancel();
 				return;

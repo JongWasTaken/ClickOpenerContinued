@@ -25,7 +25,7 @@ import net.minecraft.util.Identifier;
  * whitelist
  * - Contains ids of items (minecraft:crafting_table), item tags prefixed by item (item#minecraft:anvil),
  *   or block tags prefixed by block (block#minecraft:shulker_boxes). Tags without prefix will add both item and block.
- * 
+ * <p>
  * blacklist
  * - Contains ids of items. Useful for excluding a single item from a tag (minecraft:damaged_anvil).
  */
@@ -39,23 +39,23 @@ public class Config {
 	private ClickType clickType;
 
 	public Set<TagKey<Item>> getItemTagsList() {
-		return itemTagsList;
+		return this.itemTagsList;
 	}
 
 	public Set<TagKey<Block>> getBlockTagsList() {
-		return blockTagsList;
+		return this.blockTagsList;
 	}
 
 	public Set<Identifier> getItemList() {
-		return itemList;
+		return this.itemList;
 	}
 
 	public Set<Identifier> getBlacklist() {
-		return blacklist;
+		return this.blacklist;
 	}
 
 	public ClickType getClickType() {
-		return clickType;
+		return this.clickType;
 	}
 
 	public Config() {
@@ -75,19 +75,19 @@ public class Config {
 	}
 
 	public void reload() {
-		if (Files.exists(CONFIG_FILE)) {
-			if (!read()) {
+		if (Files.exists(Config.CONFIG_FILE)) {
+			if (!this.read()) {
 				//Don't write. Allow the user a chance to recover.
 				return;
 			}
 		} else {
-			reset();
+            this.reset();
 		}
-		write();
+        this.write();
 	}
 
 	public boolean read() {
-		try (var reader = Files.newBufferedReader(CONFIG_FILE)) {
+		try (var reader = Files.newBufferedReader(Config.CONFIG_FILE)) {
 			ClickOpenerMod.GSON.fromJson(reader, ConfigBuilder.class).fill(this);
 			return true;
 		} catch (IOException | JsonParseException e) {
@@ -97,8 +97,8 @@ public class Config {
 	}
 
 	public void write() {
-		var builder = asBuilder();
-		try (var out = Files.newBufferedWriter(CONFIG_FILE)) {
+		var builder = this.asBuilder();
+		try (var out = Files.newBufferedWriter(Config.CONFIG_FILE)) {
 			ClickOpenerMod.GSON.toJson(builder, out);
 		} catch (IOException | JsonIOException e) {
 			ClickOpenerMod.LOGGER.error("Failed to write configuration file: {}", e.getMessage());
@@ -108,44 +108,44 @@ public class Config {
 
 	public void addItem(Identifier id, boolean allow, boolean writeToFile) {
 		if (allow) {
-			itemList.add(id);
+            this.itemList.add(id);
 		} else {
-			blacklist.add(id);
+            this.blacklist.add(id);
 		}
-		if (writeToFile) write();
+		if (writeToFile) this.write();
 	}
 
 	public void addItem(Identifier id, boolean allow) {
-		addItem(id, allow, true);
+        this.addItem(id, allow, true);
 	}
 
 	public void removeItem(Identifier id, boolean allow) {
 		if (allow) {
-			itemList.remove(id);
+            this.itemList.remove(id);
 		} else {
-			blacklist.remove(id);
+            this.blacklist.remove(id);
 		}
-		write();
+        this.write();
 	}
 
 	public void addItemTag(Identifier tag) {
-		itemTagsList.add(TagKey.of(RegistryKeys.ITEM, tag));
-		write();
+        this.itemTagsList.add(TagKey.of(RegistryKeys.ITEM, tag));
+        this.write();
 	}
 
 	public void addBlockTag(Identifier tag) {
-		blockTagsList.add(TagKey.of(RegistryKeys.BLOCK, tag));
-		write();
+        this.blockTagsList.add(TagKey.of(RegistryKeys.BLOCK, tag));
+        this.write();
 	}
 
 	public void removeItemTag(Identifier tag) {
-		itemTagsList.remove(TagKey.of(RegistryKeys.ITEM, tag));
-		write();
+        this.itemTagsList.remove(TagKey.of(RegistryKeys.ITEM, tag));
+        this.write();
 	}
 
 	public void removeBlockTag(Identifier tag) {
-		blockTagsList.remove(TagKey.of(RegistryKeys.BLOCK, tag));
-		write();
+        this.blockTagsList.remove(TagKey.of(RegistryKeys.BLOCK, tag));
+        this.write();
 	}
 
 	public void setClickType(ClickType clickType) {
@@ -154,10 +154,10 @@ public class Config {
 
 	public boolean isAllowed(Item item) {
 		var id = Registries.ITEM.getId(item);
-		return (itemList.contains(id)
-				|| anyMatch(itemTagsList, Registries.ITEM.getEntry(item))
-				|| item instanceof BlockItem bi && anyMatch(blockTagsList, Registries.BLOCK.getEntry(bi.getBlock()))
-				) && !blacklist.contains(id);
+		return (this.itemList.contains(id)
+				|| this.anyMatch(this.itemTagsList, Registries.ITEM.getEntry(item))
+				|| item instanceof BlockItem bi && this.anyMatch(this.blockTagsList, Registries.BLOCK.getEntry(bi.getBlock()))
+				) && !this.blacklist.contains(id);
 	}
 
 	private <T> boolean anyMatch(Set<TagKey<T>> tags, RegistryEntry<T> entry) {
@@ -168,24 +168,24 @@ public class Config {
 		return new ConfigBuilder(this);
 	}
 
-	public static record ConfigBuilder(Set<String> whitelist, Set<Identifier> blacklist, ClickType defaultClickType) {
+	public record ConfigBuilder(Set<String> whitelist, Set<Identifier> blacklist, ClickType defaultClickType) {
 		public ConfigBuilder(Config config) {
 			this(new HashSet<>(), new HashSet<>(), config.clickType);
 			for (var k : config.itemTagsList) {
-				whitelist.add("item#"+k.id());
+                this.whitelist.add("item#"+k.id());
 			}
 			for (var k : config.blockTagsList) {
-				whitelist.add("block#"+k.id());
+                this.whitelist.add("block#"+k.id());
 			}
 			for (var b : config.itemList) {
-				whitelist.add(b.toString());
+                this.whitelist.add(b.toString());
 			}
-			blacklist.addAll(config.blacklist);
+            this.blacklist.addAll(config.blacklist);
 		}
 
 		public void fill(Config config) {
 			config.reset();
-			for (var s : whitelist) {
+			for (var s : this.whitelist) {
 				var arr = s.split("#",2);
 				if (arr.length == 1) {
 					config.itemList.add(Identifier.of(s));
@@ -200,13 +200,13 @@ public class Config {
 				}
 			}
 
-			config.blacklist.addAll(blacklist);
-			config.setClickType(defaultClickType);
+			config.blacklist.addAll(this.blacklist);
+			config.setClickType(this.defaultClickType);
 		}
 
 		@Override
 		public String toString() {
-			return "[whitelist="+whitelist+", blacklist="+blacklist+", defaultClickType=" + defaultClickType + "]";
+			return "[whitelist="+ this.whitelist +", blacklist="+ this.blacklist +", defaultClickType=" + this.defaultClickType + "]";
 		}
 	}
 }
