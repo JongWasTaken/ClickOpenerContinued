@@ -1,5 +1,6 @@
 package pw.smto.clickopener.mixin;
 
+import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.util.collection.DefaultedList;
@@ -48,8 +49,15 @@ public abstract class ScreenHandlerMixin implements OpenContextHolder {
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/slot/Slot;getStack()Lnet/minecraft/item/ItemStack;"), method = "internalOnSlotClick", cancellable = true)
 	private void internalSlotClickHook(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
 		if (actionType == SlotActionType.SWAP) {
-			if (((Openable)(Object)this.slots.get(slotIndex).getStack()).clickopener$hasCloser()) {
+			ItemStack sourceStack = player.getInventory().getStack(button);
+			Slot slot = this.slots.get(slotIndex);
+			ItemStack targetStack = slot.getStack();
+			//ClickOpenerMod.LOGGER.warn("Swap about to occur");
+			//ClickOpenerMod.LOGGER.warn("Source has closer: " + ((Openable)(Object)sourceStack).clickopener$hasCloser());
+			//ClickOpenerMod.LOGGER.warn("Target has closer: " + ((Openable)(Object)targetStack).clickopener$hasCloser());
+			if (((Openable)(Object)sourceStack).clickopener$hasCloser() || ((Openable)(Object)targetStack).clickopener$hasCloser()) {
 				ci.cancel();
+				return;
 			}
 		}
 	}
