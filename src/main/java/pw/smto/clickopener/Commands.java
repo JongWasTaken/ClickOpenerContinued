@@ -6,6 +6,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
+import net.fabricmc.loader.api.FabricLoader;
 import pw.smto.clickopener.api.ClickType;
 import pw.smto.clickopener.interfaces.ArgumentChecker;
 
@@ -52,12 +53,14 @@ public class Commands {
 
 		var reload = literal("reload")
 				.executes(Commands::reload);
-		dispatcher.register(literal("fly")
-				.executes((CommandContext<ServerCommandSource> context) -> {
-					context.getSource().getPlayer().getAbilities().allowFlying = true;
-					context.getSource().getPlayer().sendAbilitiesUpdate();
-					return 0;
-				}));
+		if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+			dispatcher.register(literal("cofly")
+					.executes((CommandContext<ServerCommandSource> context) -> {
+						context.getSource().getPlayer().getAbilities().allowFlying = true;
+						context.getSource().getPlayer().sendAbilitiesUpdate();
+						return 0;
+					}));
+		}
 
 		var add = literal("add")
 				.then(literal("item")
