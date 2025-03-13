@@ -21,9 +21,9 @@ public abstract class ServerPlayNetworkHandlerMixin {
 	@Shadow
     public ServerPlayerEntity player;
 
-	@Inject(at = @At(value = "INVOKE", target = "net/minecraft/network/packet/c2s/play/ClickSlotC2SPacket.getRevision()I", shift = At.Shift.BEFORE), method = "onClickSlot", cancellable = true)
+	@Inject(at = @At(value = "INVOKE", target = "net/minecraft/network/packet/c2s/play/ClickSlotC2SPacket.revision()I", shift = At.Shift.BEFORE), method = "onClickSlot", cancellable = true)
 	public void clickopener_onClickSlot(ClickSlotC2SPacket packet, CallbackInfo info) {
-		var slotIndex = packet.getSlot();
+		var slotIndex = packet.slot();
 		if (slotIndex==ScreenHandler.EMPTY_SPACE_SLOT_INDEX || slotIndex==-1) {
 			//use Minecraft default handling
 			return;
@@ -38,7 +38,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
 			return;
 		}
 
-		var clickType = ClickType.convert(packet.getActionType(), packet.getButton(), slotIndex);
+		var clickType = ClickType.convert(packet.actionType(), packet.button(), slotIndex);
 		if (ClickType.NONE == clickType) {
 			//use Minecraft default handling
 			return;

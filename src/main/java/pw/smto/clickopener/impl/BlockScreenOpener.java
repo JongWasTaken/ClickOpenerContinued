@@ -37,7 +37,7 @@ public interface BlockScreenOpener extends Opener<BlockScreenOpener, BlockOpenCo
 	@Override
 	default void onClose(BlockOpenContext context) {
 		//Fake break the block to drop the items
-		context.getBlockState().onStateReplaced(context.world(), context.pos(), Blocks.AIR.getDefaultState(), false);
+		context.getBlockState().getBlock().onStateReplaced(Blocks.AIR.getDefaultState(), context.world(), context.pos(), false);
 		Opener.super.onClose(context);
 	}
 

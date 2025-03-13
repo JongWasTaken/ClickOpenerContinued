@@ -13,7 +13,9 @@ import java.util.stream.Stream;
 
 import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.recipe.ServerRecipeManager;
+import net.minecraft.registry.*;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.dimension.PortalForcer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,10 +49,6 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.item.map.MapState;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.particle.ParticleEffect;
-import net.minecraft.registry.DynamicRegistryManager;
-import net.minecraft.registry.Registry;
-import net.minecraft.registry.RegistryKey;
-import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.resource.featuretoggle.FeatureSet;
@@ -514,11 +512,6 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public void playSound(PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category) {
-        this.delegate().playSound(except, pos, sound, category);
-	}
-
-	@Override
 	public int sectionCoordToIndex(int coord) {
 		return this.delegate().sectionCoordToIndex(coord);
 	}
@@ -834,74 +827,13 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public void playSound(PlayerEntity except, BlockPos pos, SoundEvent sound, SoundCategory category, float volume,
-			float pitch) {
-        this.delegate().playSound(except, pos, sound, category, volume, pitch);
-	}
-
-	@Override
-	public void playSound(PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category,
-			float volume, float pitch, long seed) {
-        this.delegate().playSound(except, x, y, z, sound, category, volume, pitch, seed);
-	}
-
-	@Override
-	public void playSound(PlayerEntity except, double x, double y, double z, SoundEvent sound, SoundCategory category,
-			float volume, float pitch) {
-        this.delegate().playSound(except, x, y, z, sound, category, volume, pitch);
-	}
-
-	@Override
 	public boolean shouldTickBlocksInChunk(long chunkPos) {
 		return this.delegate().shouldTickBlocksInChunk(chunkPos);
 	}
 
 	@Override
-	public void playSoundFromEntity(PlayerEntity except, Entity entity, SoundEvent sound, SoundCategory category,
-			float volume, float pitch) {
-        this.delegate().playSoundFromEntity(except, entity, sound, category, volume, pitch);
-	}
-
-	@Override
-	public void playSoundAtBlockCenter(BlockPos pos, SoundEvent sound, SoundCategory category, float volume,
-			float pitch, boolean useDistance) {
-        this.delegate().playSoundAtBlockCenter(pos, sound, category, volume, pitch, useDistance);
-	}
-
-	@Override
 	public void setTimeOfDay(long timeOfDay) {
         this.delegate().setTimeOfDay(timeOfDay);
-	}
-
-	@Override
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume,
-			float pitch, boolean useDistance) {
-        this.delegate().playSound(x, y, z, sound, category, volume, pitch, useDistance);
-	}
-
-	@Override
-	public void addParticle(ParticleEffect parameters, double x, double y, double z, double velocityX, double velocityY,
-			double velocityZ) {
-        this.delegate().addParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
-	}
-
-	@Override
-	public void addParticle(
-			ParticleEffect parameters, boolean force, boolean canSpawnOnMinimal, double x, double y, double z, double velocityX, double velocityY, double velocityZ
-	) {
-        this.delegate().addParticle(parameters, force, canSpawnOnMinimal, x, y, z, velocityX, velocityY, velocityZ);
-	}
-
-	@Override
-	public void addImportantParticle(ParticleEffect parameters, double x, double y, double z, double velocityX,
-			double velocityY, double velocityZ) {
-        this.delegate().addImportantParticle(parameters, x, y, z, velocityX, velocityY, velocityZ);
-	}
-
-	@Override
-	public void addImportantParticle(ParticleEffect parameters, boolean alwaysSpawn, double x, double y, double z,
-			double velocityX, double velocityY, double velocityZ) {
-        this.delegate().addImportantParticle(parameters, alwaysSpawn, x, y, z, velocityX, velocityY, velocityZ);
 	}
 
 	@Override
@@ -1084,8 +1016,8 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public boolean canPlayerModifyAt(PlayerEntity player, BlockPos pos) {
-		return this.delegate().canPlayerModifyAt(player, pos);
+	public boolean canEntityModifyAt(Entity entity, BlockPos pos) {
+		return this.delegate().canEntityModifyAt(entity, pos);
 	}
 
 	@Override
@@ -1347,15 +1279,13 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public void playSound(PlayerEntity except, double x, double y, double z, RegistryEntry<SoundEvent> sound,
-			SoundCategory category, float volume, float pitch, long seed) {
-        this.delegate().playSound(except, x, y, z, sound, category, volume, pitch, seed);
+	public void playSound(@Nullable Entity source, double x, double y, double z, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed) {
+        this.delegate().playSound(source, x, y, z, sound, category, volume, pitch, seed);
 	}
 
 	@Override
-	public void playSoundFromEntity(PlayerEntity except, Entity entity, RegistryEntry<SoundEvent> sound,
-			SoundCategory category, float volume, float pitch, long seed) {
-        this.delegate().playSoundFromEntity(except, entity, sound, category, volume, pitch, seed);
+	public void playSoundFromEntity(@Nullable Entity source, Entity entity, RegistryEntry<SoundEvent> sound, SoundCategory category, float volume, float pitch, long seed) {
+        this.delegate().playSoundFromEntity(source, entity, sound, category, volume, pitch, seed);
 	}
 
 	@Override
@@ -1364,8 +1294,8 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public void syncWorldEvent(PlayerEntity player, int eventId, BlockPos pos, int data) {
-        this.delegate().syncWorldEvent(player, eventId, pos, data);
+	public void syncWorldEvent(@Nullable Entity source, int eventId, BlockPos pos, int data) {
+        this.delegate().syncWorldEvent(source, eventId, pos, data);
 	}
 
 	@Override
@@ -1384,27 +1314,10 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock) {
-        this.delegate().updateNeighborsAlways(pos, sourceBlock);
+	public void updateNeighborsAlways(BlockPos pos, Block sourceBlock, @Nullable WireOrientation orientation) {
+        this.delegate().updateNeighborsAlways(pos, sourceBlock, orientation);
 	}
 
-	/*
-	@Override
-	public void updateNeighborsExcept(BlockPos pos, Block sourceBlock, Direction direction) {
-		delegate().updateNeighborsExcept(pos, sourceBlock, direction);
-	}
-
-	@Override
-	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos sourcePos) {
-		delegate().updateNeighbor(pos, sourceBlock, sourcePos);
-	}
-
-	@Override
-	public void updateNeighbor(BlockState state, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
-		delegate().updateNeighbor(state, pos, sourceBlock, sourcePos, notify);
-	}
-
-	 */
 	@Override
 	public void sendEntityStatus(Entity entity, byte status) {
         this.delegate().sendEntityStatus(entity, status);
@@ -1414,16 +1327,6 @@ public class FakeWorld extends ServerWorld {
 	public void sendEntityDamage(Entity entity, DamageSource damageSource) {
         this.delegate().sendEntityDamage(entity, damageSource);
 	}
-
-	/*
-	@Override
-	public Explosion createExplosion(Entity entity, DamageSource damageSource, ExplosionBehavior behavior, double x,
-			double y, double z, float power, boolean createFire, ExplosionSourceType explosionSourceType) {
-		return delegate().createExplosion(entity, damageSource, behavior, x, y, z, power, createFire,
-				explosionSourceType);
-	}
-
-	 */
 
 	@Override
 	public @NotNull MinecraftServer getServer() {
@@ -1467,11 +1370,6 @@ public class FakeWorld extends ServerWorld {
 	@Override
 	public Entity getEntityById(int id) {
 		return this.delegate().getEntityById(id);
-	}
-
-	@Override
-	public Entity getDragonPart(int id) {
-		return this.delegate().getDragonPart(id);
 	}
 
 	@Override
@@ -1539,11 +1437,6 @@ public class FakeWorld extends ServerWorld {
 	@Override
 	public List<ServerPlayerEntity> getPlayers() {
 		return this.delegate().getPlayers();
-	}
-
-	@Override
-	public void onBlockChanged(BlockPos pos, BlockState oldBlock, BlockState newBlock) {
-        this.delegate().onBlockChanged(pos, oldBlock, newBlock);
 	}
 
 	@Override
@@ -1682,18 +1575,18 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public boolean shouldTickEntity(BlockPos pos) {
-		return this.delegate().shouldTickEntity(pos);
+	public boolean shouldTickEntityAt(BlockPos pos) {
+		return this.delegate().shouldTickEntityAt(pos);
 	}
 
 	@Override
-	public boolean shouldTick(BlockPos pos) {
-		return this.delegate().shouldTick(pos);
+	public boolean shouldTickBlockAt(BlockPos pos) {
+		return this.delegate().shouldTickBlockAt(pos);
 	}
 
 	@Override
-	public boolean shouldTick(ChunkPos pos) {
-		return this.delegate().shouldTick(pos);
+	public boolean shouldTickChunkAt(ChunkPos pos) {
+		return this.delegate().shouldTickChunkAt(pos);
 	}
 
 	@Override
