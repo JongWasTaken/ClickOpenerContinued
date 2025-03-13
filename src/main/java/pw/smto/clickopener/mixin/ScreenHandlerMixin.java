@@ -1,6 +1,10 @@
 package pw.smto.clickopener.mixin;
 
+import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.collection.DefaultedList;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -11,6 +15,7 @@ import pw.smto.clickopener.api.Opener;
 import pw.smto.clickopener.interfaces.OpenContextHolder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.ScreenHandler;
+import pw.smto.clickopener.interfaces.Openable;
 
 @Mixin(ScreenHandler.class)
 public abstract class ScreenHandlerMixin implements OpenContextHolder {
@@ -28,12 +33,24 @@ public abstract class ScreenHandlerMixin implements OpenContextHolder {
 		return clickopener$openContext != null;
 	}
 
+	@Shadow
+	public final DefaultedList<Slot> slots = DefaultedList.of();
+
 	@SuppressWarnings("unused")
 	@Inject(at = @At("RETURN"), method = "onClosed")
 	private void clickopener$onClose(PlayerEntity player, CallbackInfo info) {
 		if (clickopener$hasOpenContext()) {
 			clickopener$openContext.openerConsumer(Opener::onClose);
 			clickopener$openContext = null;
+		}
+	}
+
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/slot/Slot;getStack()Lnet/minecraft/item/ItemStack;"), method = "internalOnSlotClick", cancellable = true)
+	private void internalSlotClickHook(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
+		if (actionType == SlotActionType.SWAP) {
+			if (((Openable)(Object)this.slots.get(slotIndex).getStack()).clickopener$hasCloser()) {
+				ci.cancel();
+			}
 		}
 	}
 }
