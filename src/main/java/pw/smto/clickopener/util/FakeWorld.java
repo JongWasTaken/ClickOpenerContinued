@@ -109,6 +109,7 @@ import net.minecraft.world.tick.WorldTickScheduler;
 @SuppressWarnings({"deprecation", "java:S5803"})
 public class FakeWorld extends ServerWorld {
 	private static final long RANDOM_OFFSET = UnsafeAccess.fieldOffset(World.class, FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary", "net.minecraft.class_1937", "field_9229", "Lnet/minecraft/class_5819;"));
+	private static final long THREAD_SAFE_RANDOM_OFFSET = UnsafeAccess.fieldOffset(World.class, FabricLoader.getInstance().getMappingResolver().mapFieldName("intermediary", "net.minecraft.class_1937", "field_38861", "Lnet/minecraft/class_5819;"));
 	private static final long CONTEXT_OFFSET = UnsafeAccess.fieldOffset(FakeWorld.class, "context");
 
 	@SuppressWarnings("unused")
@@ -123,7 +124,8 @@ public class FakeWorld extends ServerWorld {
 		try {
 			var fakeWorld = (FakeWorld) UnsafeAccess.UNSAFE.allocateInstance(FakeWorld.class);
 			//set public fields from world
-			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.RANDOM_OFFSET, context.player().getWorld().random);
+            UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.RANDOM_OFFSET, context.player().getWorld().random);
+			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.THREAD_SAFE_RANDOM_OFFSET, context.player().getWorld().threadSafeRandom);
 			//isClient is false by default
 			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.CONTEXT_OFFSET, context);
 			return fakeWorld;
