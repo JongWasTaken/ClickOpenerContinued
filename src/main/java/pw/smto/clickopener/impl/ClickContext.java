@@ -45,7 +45,7 @@ public class ClickContext {
 	}
 
 	public ServerWorld world() {
-		return this.player().getServerWorld();
+		return this.player().getWorld();
 	}
 
 	public BlockPos pos() {

@@ -17,8 +17,8 @@ import net.minecraft.world.World;
 @SuppressWarnings("java:S2160")
 @Mixin(ServerPlayerEntity.class)
 public abstract class ServerPlayerEntityMixin extends PlayerEntity implements ClosePacketSkipper {
-	protected ServerPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile gameProfile) {
-		super(world, pos, yaw, gameProfile);
+	protected ServerPlayerEntityMixin(World world, GameProfile gameProfile) {
+		super(world, gameProfile);
 	}
 
 	@Unique

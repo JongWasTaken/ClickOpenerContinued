@@ -123,7 +123,7 @@ public class FakeWorld extends ServerWorld {
 		try {
 			var fakeWorld = (FakeWorld) UnsafeAccess.UNSAFE.allocateInstance(FakeWorld.class);
 			//set public fields from world
-			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.RANDOM_OFFSET, context.player().getServerWorld().random);
+			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.RANDOM_OFFSET, context.player().getWorld().random);
 			//isClient is false by default
 			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.CONTEXT_OFFSET, context);
 			return fakeWorld;
@@ -133,7 +133,7 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	private ServerWorld delegate() {
-		return this.context.player().getServerWorld();
+		return this.context.player().getWorld();
 	}
 
 	private <T> T ifHandlesOrElse(BlockPos pos, Supplier<T> ifHandles, Supplier<T> orElse) {
@@ -998,11 +998,6 @@ public class FakeWorld extends ServerWorld {
 	@Override
 	public int getSeaLevel() {
 		return this.delegate().getSeaLevel();
-	}
-
-	@Override
-	public void disconnect() {
-        this.delegate().disconnect();
 	}
 
 	@Override
