@@ -116,7 +116,7 @@ public class FakeWorld extends ServerWorld {
     private final BlockOpenContext context;
 
 	private FakeWorld() {
-		super(null, null, null, null, null, null, null, false, 0, null, false, null);
+		super(null, null, null, null, null, null, false, 0, List.of(), false, null);
 		throw new IllegalStateException("FakeWorld constructor should not be used.");
 	}
 
@@ -124,8 +124,8 @@ public class FakeWorld extends ServerWorld {
 		try {
 			var fakeWorld = (FakeWorld) UnsafeAccess.UNSAFE.allocateInstance(FakeWorld.class);
 			//set public fields from world
-            UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.RANDOM_OFFSET, context.player().getWorld().random);
-			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.THREAD_SAFE_RANDOM_OFFSET, context.player().getWorld().threadSafeRandom);
+            UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.RANDOM_OFFSET, context.player().getEntityWorld().random);
+			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.THREAD_SAFE_RANDOM_OFFSET, context.player().getEntityWorld().threadSafeRandom);
 			//isClient is false by default
 			UnsafeAccess.UNSAFE.putObject(fakeWorld, FakeWorld.CONTEXT_OFFSET, context);
 			return fakeWorld;
@@ -135,7 +135,7 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	private ServerWorld delegate() {
-		return this.context.player().getWorld();
+		return this.context.player().getEntityWorld();
 	}
 
 	private <T> T ifHandlesOrElse(BlockPos pos, Supplier<T> ifHandles, Supplier<T> orElse) {
@@ -839,8 +839,8 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public void tickSpawners(boolean spawnMonsters, boolean spawnAnimals) {
-        this.delegate().tickSpawners(spawnMonsters, spawnAnimals);
+	public void tickSpawners(boolean spawnMonsters) {
+		this.delegate().tickSpawners(spawnMonsters);
 	}
 
 	@Override
@@ -950,13 +950,8 @@ public class FakeWorld extends ServerWorld {
 	 */
 
 	@Override
-	public BlockPos getSpawnPos() {
-		return this.delegate().getSpawnPos();
-	}
-
-	@Override
-	public float getSpawnAngle() {
-		return this.delegate().getSpawnAngle();
+	public WorldProperties.SpawnPoint getSpawnPoint() {
+		return this.delegate().getSpawnPoint();
 	}
 
 	@Override
@@ -1417,8 +1412,8 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public void setSpawnPos(BlockPos pos, float angle) {
-        this.delegate().setSpawnPos(pos, angle);
+	public void setSpawnPoint(WorldProperties.SpawnPoint spawnPoint) {
+		this.delegate().setSpawnPoint(spawnPoint);
 	}
 
 	@Override
