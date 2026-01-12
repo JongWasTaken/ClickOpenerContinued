@@ -1,5 +1,6 @@
 package pw.smto.clickopener.util;
 
+import net.minecraft.screen.GenericContainerScreenHandler;
 import pw.smto.clickopener.ClickOpenerMod;
 import pw.smto.clickopener.api.OpenContext;
 import pw.smto.clickopener.api.Opener;
@@ -41,6 +42,12 @@ public class ScreenHelper {
 	}
 
 	public static boolean openScreen(ClickContext context) {
+		if (!ClickOpenerMod.CONFIG.isUsageInChestScreenAllowed()) {
+			if (context.player().currentScreenHandler instanceof GenericContainerScreenHandler) {
+				return false;
+			}
+		}
+
 		if (!ClickOpenerMod.PLAYER_CONFIGS.isClickTypeAllowed(context.player(), context.clickType()) || !ClickOpenerMod.CONFIG.isAllowed(context.initialStack().getItem())) {
 			return false;
 		}

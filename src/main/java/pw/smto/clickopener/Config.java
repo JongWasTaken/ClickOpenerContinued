@@ -10,6 +10,7 @@ import java.util.Set;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonParseException;
 
+import org.jetbrains.annotations.NotNull;
 import pw.smto.clickopener.api.ClickType;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.Block;
@@ -37,6 +38,7 @@ public class Config {
 	private final Set<Identifier> itemList;
 	private final Set<Identifier> blacklist;
 	private ClickType clickType;
+	private boolean allowUsageInChestScreen;
 
 	public Set<TagKey<Item>> getItemTagsList() {
 		return this.itemTagsList;
@@ -58,12 +60,17 @@ public class Config {
 		return this.clickType;
 	}
 
+	public boolean isUsageInChestScreenAllowed() {
+		return this.allowUsageInChestScreen;
+	}
+
 	public Config() {
 		this.itemTagsList = new HashSet<>();
 		this.blockTagsList = new HashSet<>();
 		this.itemList = new HashSet<>();
 		this.blacklist = new HashSet<>();
 		this.clickType = ClickType.RIGHT;
+		this.allowUsageInChestScreen = false;
 	}
 
 	public void reset() {
@@ -72,6 +79,7 @@ public class Config {
 		this.blockTagsList.clear();
 		this.blacklist.clear();
 		this.clickType = ClickType.RIGHT;
+		this.allowUsageInChestScreen = false;
 	}
 
 	public void reload() {
@@ -152,6 +160,10 @@ public class Config {
 		this.clickType = Objects.requireNonNullElse(clickType, ClickType.RIGHT);
 	}
 
+	public void setAllowUsageInChestScreen(boolean allow) {
+		this.allowUsageInChestScreen = allow;
+	}
+
 	public boolean isAllowed(Item item) {
 		var id = Registries.ITEM.getId(item);
 		return (this.itemList.contains(id)
@@ -168,9 +180,9 @@ public class Config {
 		return new ConfigBuilder(this);
 	}
 
-	public record ConfigBuilder(Set<String> whitelist, Set<Identifier> blacklist, ClickType defaultClickType) {
+	public record ConfigBuilder(Set<String> whitelist, Set<Identifier> blacklist, ClickType defaultClickType, boolean allowUsageInChestScreen) {
 		public ConfigBuilder(Config config) {
-			this(new HashSet<>(), new HashSet<>(), config.clickType);
+			this(new HashSet<>(), new HashSet<>(), config.clickType, config.allowUsageInChestScreen);
 			for (var k : config.itemTagsList) {
                 this.whitelist.add("item#"+k.id());
 			}
@@ -202,11 +214,12 @@ public class Config {
 
 			config.blacklist.addAll(this.blacklist);
 			config.setClickType(this.defaultClickType);
+			config.setAllowUsageInChestScreen(this.allowUsageInChestScreen);
 		}
 
 		@Override
-		public String toString() {
-			return "[whitelist="+ this.whitelist +", blacklist="+ this.blacklist +", defaultClickType=" + this.defaultClickType + "]";
+		public @NotNull String toString() {
+			return "[whitelist="+ this.whitelist +", blacklist="+ this.blacklist +", defaultClickType=" + this.defaultClickType + ",allowUsageInChestScreen=" + this.allowUsageInChestScreen + "]";
 		}
 	}
 }

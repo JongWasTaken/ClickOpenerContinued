@@ -2,6 +2,7 @@ package pw.smto.clickopener;
 
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
@@ -14,6 +15,7 @@ import pw.smto.clickopener.interfaces.ArgumentChecker;
 import static net.minecraft.server.command.CommandManager.literal;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -41,9 +43,11 @@ public class Commands {
 	private static final SuggestionProvider<ServerCommandSource> WHITELIST_BLOCKTAG_SUGGESTIONS = (context, builder) -> CommandSource.suggestIdentifiers(ClickOpenerMod.CONFIG.getBlockTagsList().stream().map(TagKey::id), builder);
 	private static final SuggestionProvider<ServerCommandSource> BLACKLIST_SUGGESTIONS = (context, builder) -> CommandSource.suggestIdentifiers(ClickOpenerMod.CONFIG.getBlacklist(), builder);
 	private static final SuggestionProvider<ServerCommandSource> CLICK_TYPE_SUGGESTIONS = (context, builder) -> CommandSource.suggestMatching(Arrays.stream(ClickType.values()).map(Enum::name), builder);
+	private static final SuggestionProvider<ServerCommandSource> ALLOW_USAGE_IN_CHEST_SCREEN_SUGGESTIONS = (context, builder) -> BoolArgumentType.bool().listSuggestions(context, builder);
 	private static final String ID = "id";
 	private static final String CLICK_TYPE = "clickType";
 	private static final String DEFAULT_CLICK_TYPE = "defaultClickType";
+	private static final String ALLOW_USAGE_IN_CHEST_SCREEN = "allowUsageInChestScreen";
 
 	private Commands() {}
 
@@ -121,6 +125,15 @@ public class Commands {
 						.suggests(Commands.CLICK_TYPE_SUGGESTIONS)
 						.executes(c -> Commands.setClickType(c, false)))
 				.executes(c -> Commands.displayClickType(c, false));
+
+		/*
+		var allowUsageInChestScreen = literal(Commands.ALLOW_USAGE_IN_CHEST_SCREEN)
+				.then(argument(Commands.ALLOW_USAGE_IN_CHEST_SCREEN, BoolArgumentType.bool())
+						.suggests(Commands.ALLOW_USAGE_IN_CHEST_SCREEN_SUGGESTIONS)
+						.executes(c -> ))
+				.executes(c -> );
+
+		 */
 
 		serverRoot
 		.then(reload)
