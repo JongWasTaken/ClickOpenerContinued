@@ -8,6 +8,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.command.DefaultPermissions;
 import net.minecraft.server.command.CommandManager;
 import pw.smto.clickopener.api.ClickType;
 import pw.smto.clickopener.interfaces.ArgumentChecker;
@@ -15,7 +16,6 @@ import pw.smto.clickopener.interfaces.ArgumentChecker;
 import static net.minecraft.server.command.CommandManager.literal;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -54,7 +54,7 @@ public class Commands {
 	@SuppressWarnings({"java:S1172", "unused"})
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher, CommandRegistryAccess registryAccess, CommandManager.RegistrationEnvironment environment) {
 		var serverRoot = literal(ClickOpenerMod.MODID)
-				.requires(s->s.hasPermissionLevel(4));
+				.requires(s->s.getPermissions().hasPermission(DefaultPermissions.ADMINS));
 
 		var reload = literal("reload")
 				.executes(Commands::reload);

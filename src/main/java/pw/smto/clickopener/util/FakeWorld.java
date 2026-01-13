@@ -17,6 +17,7 @@ import net.minecraft.registry.*;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.dimension.PortalForcer;
+import net.minecraft.world.rule.GameRules;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.UnknownNullability;
@@ -81,7 +82,6 @@ import net.minecraft.village.raid.RaidManager;
 import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.Difficulty;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.PersistentStateManager;
@@ -238,11 +238,6 @@ public class FakeWorld extends ServerWorld {
 	 */
 
 	@Override
-	public float getMoonSize() {
-		return this.delegate().getMoonSize();
-	}
-
-	@Override
 	public boolean isValidForSetBlock(BlockPos pos) {
 		return this.delegate().isValidForSetBlock(pos);
 	}
@@ -255,11 +250,6 @@ public class FakeWorld extends ServerWorld {
 	@Override
 	public int getStrongRedstonePower(BlockPos pos, Direction direction) {
 		return this.delegate().getStrongRedstonePower(pos, direction);
-	}
-
-	@Override
-	public float getSkyAngle(float tickDelta) {
-		return this.delegate().getSkyAngle(tickDelta);
 	}
 
 	@Override
@@ -278,8 +268,8 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public int getMoonPhase() {
-		return this.delegate().getMoonPhase();
+	public float getMoonSize(BlockPos pos) {
+		return this.delegate().getMoonSize(pos);
 	}
 
 	@Override
@@ -308,11 +298,6 @@ public class FakeWorld extends ServerWorld {
 	}
 
 	@Override
-	public long getLunarTime() {
-		return this.delegate().getLunarTime();
-	}
-
-	@Override
 	public boolean canPlace(BlockState state, BlockPos pos, ShapeContext context) {
 		return this.delegate().canPlace(state, pos, context);
 	}
@@ -321,6 +306,8 @@ public class FakeWorld extends ServerWorld {
 	public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
 		return this.delegate().getTopPosition(heightmap, pos);
 	}
+
+
 
 	@Override
 	public @Nullable Object getBlockEntityRenderData(BlockPos pos) {
@@ -841,11 +828,6 @@ public class FakeWorld extends ServerWorld {
 	@Override
 	public void tickSpawners(boolean spawnMonsters) {
 		this.delegate().tickSpawners(spawnMonsters);
-	}
-
-	@Override
-	public float getSkyAngleRadians(float tickDelta) {
-		return this.delegate().getSkyAngleRadians(tickDelta);
 	}
 
 	@Override
