@@ -15,6 +15,7 @@ import net.minecraft.component.type.MapIdComponent;
 import net.minecraft.recipe.ServerRecipeManager;
 import net.minecraft.registry.*;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.attribute.WorldEnvironmentAttributeAccess;
 import net.minecraft.world.block.WireOrientation;
 import net.minecraft.world.dimension.PortalForcer;
 import net.minecraft.world.rule.GameRules;
@@ -307,7 +308,10 @@ public class FakeWorld extends ServerWorld {
 		return this.delegate().getTopPosition(heightmap, pos);
 	}
 
-
+	@Override
+	public WorldEnvironmentAttributeAccess getEnvironmentAttributes() {
+		return this.delegate().getEnvironmentAttributes();
+	}
 
 	@Override
 	public @Nullable Object getBlockEntityRenderData(BlockPos pos) {
