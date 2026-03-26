@@ -1,4 +1,8 @@
-accessWidener v2 named
-accessible method net/minecraft/block/AbstractBlock getPickStack (Lnet/minecraft/world/WorldView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Z)Lnet/minecraft/item/ItemStack;
-accessible method net/minecraft/block/AbstractBlock onStateReplaced (Lnet/minecraft/block/BlockState;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Z)V
-accessible field net/minecraft/world/World threadSafeRandom Lnet/minecraft/util/math/random/Random;
+accessWidener v2 official
+#accessible method net/minecraft/block/AbstractBlock getPickStack (Lnet/minecraft/world/WorldView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Z)Lnet/minecraft/item/ItemStack;
+#accessible method net/minecraft/block/AbstractBlock onStateReplaced (Lnet/minecraft/block/BlockState;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;Z)V
+
+accessible field net/minecraft/world/level/Level random Lnet/minecraft/util/RandomSource;
+accessible field net/minecraft/world/level/Level soundSeedGenerator Lnet/minecraft/util/RandomSource;
+accessible method net/minecraft/world/level/block/state/BlockBehaviour affectNeighborsAfterRemoval (Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Z)V
+accessible method net/minecraft/world/level/block/state/BlockBehaviour getCloneItemStack (Lnet/minecraft/world/level/LevelReader;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;Z)Lnet/minecraft/world/item/ItemStack;

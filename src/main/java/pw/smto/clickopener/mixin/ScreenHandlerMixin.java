@@ -1,9 +1,11 @@
 package pw.smto.clickopener.mixin;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.collection.DefaultedList;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerInput;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -14,11 +16,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import pw.smto.clickopener.api.OpenContext;
 import pw.smto.clickopener.api.Opener;
 import pw.smto.clickopener.interfaces.OpenContextHolder;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.ScreenHandler;
 import pw.smto.clickopener.interfaces.Openable;
 
-@Mixin(ScreenHandler.class)
+@Mixin(AbstractContainerMenu.class)
 public abstract class ScreenHandlerMixin implements OpenContextHolder {
 	@Unique
 	@SuppressWarnings("java:S116")
@@ -35,23 +35,23 @@ public abstract class ScreenHandlerMixin implements OpenContextHolder {
 	}
 
 	@Shadow
-	public final DefaultedList<Slot> slots = DefaultedList.of();
+	public final NonNullList<Slot> slots = NonNullList.create();
 
 	@SuppressWarnings("unused")
-	@Inject(at = @At("RETURN"), method = "onClosed")
-	private void clickopener$onClose(PlayerEntity player, CallbackInfo info) {
+	@Inject(at = @At("RETURN"), method = "removed")
+	private void clickopener$onClose(Player player, CallbackInfo info) {
 		if (this.clickopener$hasOpenContext()) {
             this.clickopener$openContext.openerConsumer(Opener::onClose);
             this.clickopener$openContext = null;
 		}
 	}
 
-	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/screen/slot/Slot;getStack()Lnet/minecraft/item/ItemStack;"), method = "internalOnSlotClick", cancellable = true)
-	private void internalSlotClickHook(int slotIndex, int button, SlotActionType actionType, PlayerEntity player, CallbackInfo ci) {
-		if (actionType == SlotActionType.SWAP) {
-			ItemStack sourceStack = player.getInventory().getStack(button);
+	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/world/inventory/Slot;getItem()Lnet/minecraft/world/item/ItemStack;"), method = "doClick", cancellable = true)
+	private void internalSlotClickHook(int slotIndex, int buttonNum, ContainerInput containerInput, Player player, CallbackInfo ci) {
+		if (containerInput == ContainerInput.SWAP) {
+			ItemStack sourceStack = player.getInventory().getItem(buttonNum);
 			Slot slot = this.slots.get(slotIndex);
-			ItemStack targetStack = slot.getStack();
+			ItemStack targetStack = slot.getItem();
 			//ClickOpenerMod.LOGGER.warn("Swap about to occur");
 			//ClickOpenerMod.LOGGER.warn("Source has closer: " + ((Openable)(Object)sourceStack).clickopener$hasCloser());
 			//ClickOpenerMod.LOGGER.warn("Target has closer: " + ((Openable)(Object)targetStack).clickopener$hasCloser());

@@ -2,9 +2,8 @@ package pw.smto.clickopener.api;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import net.minecraft.item.Item;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.item.Item;
 
 public class OpenerRegistry {
 	private static final Map<Item, Opener<?, ?>> OPENERS = new HashMap<>();

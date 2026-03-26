@@ -1,5 +1,8 @@
 package pw.smto.clickopener.mixin;
 
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.MenuType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Unique;
@@ -8,18 +11,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import pw.smto.clickopener.interfaces.UseAllower;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.screen.ScreenHandler;
-import net.minecraft.screen.ScreenHandlerType;
 
 @Pseudo
 @Mixin(targets = "net.additionz.misc.FletchingScreenHandler")
-public abstract class ForcedScreenHandlerMixin extends ScreenHandler implements UseAllower {
+public abstract class ForcedScreenHandlerMixin extends AbstractContainerMenu implements UseAllower {
 	@Unique
 	@SuppressWarnings("java:S116")
 	private boolean clickopener$isAllowed;
 
-	protected ForcedScreenHandlerMixin(ScreenHandlerType<?> type, int syncId) {
+	protected ForcedScreenHandlerMixin(MenuType<?> type, int syncId) {
 		super(type, syncId);
 	}
 
@@ -34,8 +34,8 @@ public abstract class ForcedScreenHandlerMixin extends ScreenHandler implements 
 	}
 
 	@SuppressWarnings("unused")
-	@Inject(method = "canUse(Lnet/minecraft/entity/player/PlayerEntity;)Z", at = @At("HEAD"), cancellable = true)
-	public void clickOpener$onCanUse(PlayerEntity player, CallbackInfoReturnable<Boolean> info) {
+	@Inject(method = "canUse(Lnet/minecraft/world/entity/player/Player;)Z", at = @At("HEAD"), cancellable = true)
+	public void clickOpener$onCanUse(Player player, CallbackInfoReturnable<Boolean> info) {
 		if (this.clickopener$isUseAllowed()) info.setReturnValue(true);
 	}
 }

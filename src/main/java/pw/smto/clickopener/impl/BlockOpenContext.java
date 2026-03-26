@@ -1,12 +1,11 @@
 package pw.smto.clickopener.impl;
 
 import java.util.Objects;
-
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import pw.smto.clickopener.api.OpenContext;
 import pw.smto.clickopener.util.FakeWorld;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.util.math.BlockPos;
 
 public class BlockOpenContext extends OpenContext<BlockOpenContext, BlockScreenOpener> {
 	private final FakeWorld world;
@@ -18,7 +17,7 @@ public class BlockOpenContext extends OpenContext<BlockOpenContext, BlockScreenO
 		this.world = FakeWorld.create(this);
 		this.blockState = opener.getBlockState(this);
 		this.blockEntity = opener.getBlockEntity(this);
-		if (this.blockEntity != null) this.blockEntity.setWorld(this.world());
+		if (this.blockEntity != null) this.blockEntity.setLevel(this.world());
 	}
 
 	@Override

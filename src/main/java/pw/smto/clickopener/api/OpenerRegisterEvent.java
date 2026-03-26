@@ -4,7 +4,7 @@ import java.util.function.BiConsumer;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 public class OpenerRegisterEvent {
 	public static final Event<OpenerRegisterEventListener> EVENT = EventFactory.createArrayBacked(OpenerRegisterEventListener.class, listeners -> registyFunc -> {

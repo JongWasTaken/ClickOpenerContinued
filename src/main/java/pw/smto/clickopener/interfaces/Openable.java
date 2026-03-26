@@ -1,6 +1,6 @@
 package pw.smto.clickopener.interfaces;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 public interface Openable {
 	static Openable cast(ItemStack stack) {

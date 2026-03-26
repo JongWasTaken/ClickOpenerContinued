@@ -4,17 +4,16 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.inventory.ContainerInput;
 
-import net.minecraft.screen.slot.SlotActionType;
-import net.minecraft.util.StringIdentifiable;
-
-public enum ClickType implements StringIdentifiable {
+public enum ClickType implements StringRepresentable {
 	LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT, DROP, CTRL_DROP,
 	NONE;
 
 	private static final Map<String, ClickType> VALUES = Arrays.stream(ClickType.values()).collect(Collectors.toUnmodifiableMap(Enum::name, Function.identity()));
 
-	public static ClickType convert(SlotActionType action, int button, int slot) {
+	public static ClickType convert(ContainerInput action, int button, int slot) {
 		return switch (action) {
 			case PICKUP -> button == 0 ? ClickType.LEFT : ClickType.RIGHT;
 			case QUICK_MOVE -> button == 0 ? ClickType.SHIFT_LEFT : ClickType.SHIFT_RIGHT;
@@ -33,7 +32,7 @@ public enum ClickType implements StringIdentifiable {
 	}
 
 	@Override
-	public String asString() {
+	public String getSerializedName() {
 		return this.name();
 	}
 }

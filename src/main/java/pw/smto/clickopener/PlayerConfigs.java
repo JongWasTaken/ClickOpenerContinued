@@ -14,7 +14,7 @@ import com.google.gson.reflect.TypeToken;
 
 import pw.smto.clickopener.api.ClickType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 
 public class PlayerConfigs {
 	public static final Path CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve(ClickOpenerMod.MODID+"_player.json");
@@ -38,16 +38,16 @@ public class PlayerConfigs {
         this.store(uuid, modifyFunc.apply(this.getOrCreate(uuid)));
 	}
 
-	public boolean isClickTypeAllowed(ServerPlayerEntity player, ClickType clickType) {
+	public boolean isClickTypeAllowed(ServerPlayer player, ClickType clickType) {
 		return clickType == null || clickType == this.getClickType(player);
 	}
 
-	public void setClickType(ServerPlayerEntity player, ClickType clickType) {
-        this.modifyPlayerConfig(player.getUuid(), c -> c.withClickType(clickType));
+	public void setClickType(ServerPlayer player, ClickType clickType) {
+        this.modifyPlayerConfig(player.getUUID(), c -> c.withClickType(clickType));
 	}
 
-	public ClickType getClickType(ServerPlayerEntity player) {
-		return this.getOrCreate(player.getUuid()).clickType();
+	public ClickType getClickType(ServerPlayer player) {
+		return this.getOrCreate(player.getUUID()).clickType();
 	}
 
 	public void reload() {

@@ -13,14 +13,14 @@ import com.google.gson.JsonParseException;
 import org.jetbrains.annotations.NotNull;
 import pw.smto.clickopener.api.ClickType;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.Block;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.registry.tag.TagKey;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 
 /**
  * whitelist
@@ -137,22 +137,22 @@ public class Config {
 	}
 
 	public void addItemTag(Identifier tag) {
-        this.itemTagsList.add(TagKey.of(RegistryKeys.ITEM, tag));
+        this.itemTagsList.add(TagKey.create(Registries.ITEM, tag));
         this.write();
 	}
 
 	public void addBlockTag(Identifier tag) {
-        this.blockTagsList.add(TagKey.of(RegistryKeys.BLOCK, tag));
+        this.blockTagsList.add(TagKey.create(Registries.BLOCK, tag));
         this.write();
 	}
 
 	public void removeItemTag(Identifier tag) {
-        this.itemTagsList.remove(TagKey.of(RegistryKeys.ITEM, tag));
+        this.itemTagsList.remove(TagKey.create(Registries.ITEM, tag));
         this.write();
 	}
 
 	public void removeBlockTag(Identifier tag) {
-        this.blockTagsList.remove(TagKey.of(RegistryKeys.BLOCK, tag));
+        this.blockTagsList.remove(TagKey.create(Registries.BLOCK, tag));
         this.write();
 	}
 
@@ -165,15 +165,15 @@ public class Config {
 	}
 
 	public boolean isAllowed(Item item) {
-		var id = Registries.ITEM.getId(item);
+		var id = BuiltInRegistries.ITEM.getKey(item);
 		return (this.itemList.contains(id)
-				|| this.anyMatch(this.itemTagsList, Registries.ITEM.getEntry(item))
-				|| item instanceof BlockItem bi && this.anyMatch(this.blockTagsList, Registries.BLOCK.getEntry(bi.getBlock()))
+				|| this.anyMatch(this.itemTagsList, BuiltInRegistries.ITEM.wrapAsHolder(item))
+				|| item instanceof BlockItem bi && this.anyMatch(this.blockTagsList, BuiltInRegistries.BLOCK.wrapAsHolder(bi.getBlock()))
 				) && !this.blacklist.contains(id);
 	}
 
-	private <T> boolean anyMatch(Set<TagKey<T>> tags, RegistryEntry<T> entry) {
-		return tags.stream().anyMatch(entry::isIn);
+	private <T> boolean anyMatch(Set<TagKey<T>> tags, Holder<T> entry) {
+		return tags.stream().anyMatch(entry::is);
 	}
 
 	public ConfigBuilder asBuilder() {
@@ -184,10 +184,10 @@ public class Config {
 		public ConfigBuilder(Config config) {
 			this(new HashSet<>(), new HashSet<>(), config.clickType, config.allowUsageInChestScreen);
 			for (var k : config.itemTagsList) {
-                this.whitelist.add("item#"+k.id());
+                this.whitelist.add("item#"+k.location());
 			}
 			for (var k : config.blockTagsList) {
-                this.whitelist.add("block#"+k.id());
+                this.whitelist.add("block#"+k.location());
 			}
 			for (var b : config.itemList) {
                 this.whitelist.add(b.toString());
@@ -200,14 +200,14 @@ public class Config {
 			for (var s : this.whitelist) {
 				var arr = s.split("#",2);
 				if (arr.length == 1) {
-					config.itemList.add(Identifier.of(s));
+					config.itemList.add(Identifier.parse(s));
 				} else if (arr.length == 2) {
-					var id = Identifier.of(arr[1]);
+					var id = Identifier.parse(arr[1]);
 					if (!arr[0].equals("item")) {
-						config.blockTagsList.add(TagKey.of(RegistryKeys.BLOCK, id));
+						config.blockTagsList.add(TagKey.create(Registries.BLOCK, id));
 					}
 					if (!arr[0].equals("block")) {
-						config.itemTagsList.add(TagKey.of(RegistryKeys.ITEM, id));
+						config.itemTagsList.add(TagKey.create(Registries.ITEM, id));
 					}
 				}
 			}

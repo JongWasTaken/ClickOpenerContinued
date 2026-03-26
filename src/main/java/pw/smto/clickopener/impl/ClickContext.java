@@ -1,26 +1,26 @@
 package pw.smto.clickopener.impl;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.phys.BlockHitResult;
 import pw.smto.clickopener.api.ClickType;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 
 public class ClickContext {
-	private final ServerPlayerEntity player;
-	private final Hand hand;
-	private final Inventory clickedInventory;
+	private final ServerPlayer player;
+	private final InteractionHand hand;
+	private final Container clickedInventory;
 	private final int slotIndex;
 	private final ClickType clickType;
 	private final ItemStack initialCursorStack;
 	private final ItemStack initialStack;
 
-	public ClickContext(ServerPlayerEntity player, Hand hand, Inventory clickedInventory, int slotIndex, ClickType clickType, ItemStack initialCursorStack, ItemStack initialStack) {
+	public ClickContext(ServerPlayer player, InteractionHand hand, Container clickedInventory, int slotIndex, ClickType clickType, ItemStack initialCursorStack, ItemStack initialStack) {
 		this.player = player;
 		this.hand = hand;
 		this.clickedInventory = clickedInventory;
@@ -40,23 +40,23 @@ public class ClickContext {
 		this.initialStack = context.initialStack();
 	}
 
-	public ServerPlayerEntity player() {
+	public ServerPlayer player() {
 		return this.player;
 	}
 
-	public ServerWorld world() {
-		return this.player().getEntityWorld();
+	public ServerLevel world() {
+		return this.player().level();
 	}
 
 	public BlockPos pos() {
-		return this.player().getBlockPos();
+		return this.player().blockPosition();
 	}
 
-	public Hand hand() {
+	public InteractionHand hand() {
 		return this.hand;
 	}
 
-	public Inventory clickedInventory() {
+	public Container clickedInventory() {
 		return this.clickedInventory;
 	}
 
@@ -77,10 +77,10 @@ public class ClickContext {
 	}
 
 	public BlockHitResult hitResult() {
-		return new BlockHitResult(this.pos().toCenterPos(), Direction.NORTH, this.pos(), true);
+		return new BlockHitResult(this.pos().getCenter(), Direction.NORTH, this.pos(), true);
 	}
 
-	public ItemUsageContext toItemUsageContext() {
-		return new ItemUsageContext(this.world(), this.player(), this.hand(), this.player().getStackInHand(this.hand()), this.hitResult());
+	public UseOnContext toItemUsageContext() {
+		return new UseOnContext(this.world(), this.player(), this.hand(), this.player().getItemInHand(this.hand()), this.hitResult());
 	}
 }

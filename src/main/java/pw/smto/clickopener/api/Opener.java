@@ -1,11 +1,11 @@
 package pw.smto.clickopener.api;
 
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.ItemStack;
 import pw.smto.clickopener.impl.ClickContext;
 import pw.smto.clickopener.interfaces.OpenContextHolder;
 import pw.smto.clickopener.interfaces.Openable;
 import pw.smto.clickopener.interfaces.UseAllower;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
 
 @SuppressWarnings("unused")
 public interface Opener<SELF extends Opener<SELF, T>, T extends OpenContext<T, SELF>> {
@@ -13,15 +13,15 @@ public interface Opener<SELF extends Opener<SELF, T>, T extends OpenContext<T, S
 
 	default void preOpen(T context) {}
 
-	ActionResult open(T context);
+	InteractionResult open(T context);
 
 	default void postOpen(T context) {
-		final var handler = context.player().currentScreenHandler;
+		final var handler = context.player().containerMenu;
 		//Allow any ScreenHandlers that need to be forced
 		if (handler instanceof UseAllower allower) allower.clickopener$allowUse();
 		Openable.cast(context.getStack()).clickopener$setCloser(()->{
-			if (context.player().currentScreenHandler == handler) {
-				context.player().closeHandledScreen();
+			if (context.player().containerMenu == handler) {
+				context.player().closeContainer();
 			}
 		});
 		((OpenContextHolder)handler).clickopener$setOpenContext(context);

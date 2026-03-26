@@ -1,7 +1,7 @@
 package pw.smto.clickopener.impl;
 
+import net.minecraft.world.InteractionResult;
 import pw.smto.clickopener.api.Opener;
-import net.minecraft.util.ActionResult;
 
 public interface ItemScreenOpener extends Opener<ItemScreenOpener, ItemOpenContext> {
 	ItemScreenOpener DEFAULT_OPENER = new ItemScreenOpener() {
@@ -13,11 +13,11 @@ public interface ItemScreenOpener extends Opener<ItemScreenOpener, ItemOpenConte
 	}
 
 	@Override
-	default ActionResult open(ItemOpenContext context) {
+	default InteractionResult open(ItemOpenContext context) {
 		return context.runWithStackInHand(context::getStack, context::setStack, stack -> {
-			var result = stack.use(context.player().getEntityWorld(), context.player(), context.hand());
-			if (result instanceof ActionResult.Success success) {
-				context.player().setStackInHand(context.hand(), success.getNewHandStack());
+			var result = stack.use(context.player().level(), context.player(), context.hand());
+			if (result instanceof InteractionResult.Success success) {
+				context.player().setItemInHand(context.hand(), success.heldItemTransformedTo());
 				return success;
 			}
 			return result;
