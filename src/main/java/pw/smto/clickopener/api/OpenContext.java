@@ -12,6 +12,7 @@ import pw.smto.clickopener.interfaces.Openable;
 public abstract class OpenContext<SELF extends OpenContext<SELF, O>, O extends Opener<O, SELF>> extends ClickContext {
 	private final O opener;
 	private ItemStack cursorStack;
+	private int lastStackHash;
 	private ItemStack stack;
 	private boolean syncing;
 
@@ -44,11 +45,21 @@ public abstract class OpenContext<SELF extends OpenContext<SELF, O>, O extends O
 	
 	public void sync() {
 		if (!this.syncing) return;
-        this.clickedInventory().setItem(this.slotIndex(), this.stack);
+		if (ItemStack.hashItemAndComponents(this.clickedInventory().getItem(this.slotIndex())) != this.lastStackHash) {
+			// oh no, the item disappeared: search inventory for stack with matching hash
+			for (int i = 0; i < this.clickedInventory().getContainerSize(); i++) {
+				if (ItemStack.hashItemAndComponents(this.clickedInventory().getItem(i)) == this.lastStackHash) {
+					this.slotIndex = i;
+					this.clickedInventory().setItem(i, this.stack);
+					return;
+				}
+			}
+		} else this.clickedInventory().setItem(this.slotIndex(), this.stack);
 	}
 
 	public void setStack(ItemStack stack) {
 		Openable.cast(stack).clickopener$setCloser(Openable.cast(this.stack).clickopener$clearCloser());
+		this.lastStackHash = ItemStack.hashItemAndComponents(this.stack);
 		this.stack = stack;
         this.sync();
 	}

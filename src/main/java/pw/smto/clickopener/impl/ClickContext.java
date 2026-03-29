@@ -15,7 +15,7 @@ public class ClickContext {
 	private final ServerPlayer player;
 	private final InteractionHand hand;
 	private final Container clickedInventory;
-	private final int slotIndex;
+	protected int slotIndex;
 	private final ClickType clickType;
 	private final ItemStack initialCursorStack;
 	private final ItemStack initialStack;
