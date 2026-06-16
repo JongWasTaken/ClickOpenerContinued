@@ -9,6 +9,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
 import pw.smto.clickopener.api.ClickType;
 
 public class ClickContext {
@@ -77,7 +78,7 @@ public class ClickContext {
 	}
 
 	public BlockHitResult hitResult() {
-		return new BlockHitResult(this.pos().getCenter(), Direction.NORTH, this.pos(), true);
+		return new BlockHitResult(Vec3.atCenterOf(this.pos()), Direction.NORTH, this.pos(), true);
 	}
 
 	public UseOnContext toItemUsageContext() {
