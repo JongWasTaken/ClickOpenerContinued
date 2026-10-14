@@ -1304,8 +1304,8 @@ public class FakeWorld extends ServerLevel {
 	}
 
 	@Override
-	public StructureTemplateManager getStructureManager() {
-		return this.delegate().getStructureManager();
+	public StructureTemplateManager getStructureTemplateManager() {
+		return this.delegate().getStructureTemplateManager();
 	}
 
 	@Override
